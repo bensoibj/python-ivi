@@ -55,6 +55,8 @@ from .tektronixMDO4014B import tektronixMDO4014B
 from .tektronixMDO4034B import tektronixMDO4034B
 from .tektronixMDO4054B import tektronixMDO4054B
 from .tektronixMDO4104B import tektronixMDO4104B
+# MDO4000C
+from .tektronixMDO4104C import tektronixMDO4104C
 # MDO3000
 from .tektronixMDO3012 import tektronixMDO3012
 from .tektronixMDO3014 import tektronixMDO3014

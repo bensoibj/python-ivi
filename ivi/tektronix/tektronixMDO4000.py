@@ -42,9 +42,11 @@ class tektronixMDO4000(tektronixMSO4000):
         self._bandwidth = 1e9
         self._rf_bandwidth = 6e9
 
-        self._identity_description = "Tektronix MDO4000 series IVI oscilloscope driver"
-        self._identity_supported_instrument_models = ['MDO4054', 'MDO4104', 'MDO4014B',
-                'MDO4034B', 'MDO4054B', 'MDO4104B']
+        self._identity_description = \
+            "Tektronix MDO4000 series IVI oscilloscope driver"
+        self._identity_supported_instrument_models = [
+                'MDO4054', 'MDO4104', 'MDO4014B', 'MDO4034B', 'MDO4054B',
+                'MDO4104B', 'MDO4104C']
 
         self._init_channels()
 
