@@ -24,16 +24,16 @@ THE SOFTWARE.
 
 """
 
-from .tektronixAWG2000 import *
 
-class tektronixAWG2021(tektronixAWG2000):
-    "Tektronix AWG2021 arbitrary waveform generator driver"
-    
+from .tektronixAFG3000 import *
+
+
+class tektronixAFG3021C(tektronixAFG3000):
+    "Tektronix AFG3021C arbitrary/function generator driver"
+
     def __init__(self, *args, **kwargs):
-        self.__dict__.setdefault('_instrument_id', 'AWG2021')
-        
-        super(tektronixAWG2021, self).__init__(*args, **kwargs)
-        
+        self.__dict__.setdefault('_instrument_id', 'AFG3021C')
+
+        super(tektronixAFG3021C, self).__init__(*args, **kwargs)
+
         self._output_count = 1
-    
-    

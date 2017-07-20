@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 """
 
+
 import time
 import struct
 from numpy import *
@@ -40,15 +41,15 @@ StandardWaveformMapping = {
         #'dc'
         }
 
-class tektronixAWG2000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
+class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
                 fgen.ArbSeq, fgen.SoftwareTrigger, fgen.Burst,
                 fgen.ArbChannelWfm):
-    "Tektronix AWG2000 series arbitrary waveform generator driver"
+    "Tektronix AFG3000 series arbitrary/function generator driver"
     
     def __init__(self, *args, **kwargs):
         self.__dict__.setdefault('_instrument_id', '')
         
-        super(tektronixAWG2000, self).__init__(*args, **kwargs)
+        super(tektronixAFG3000, self).__init__(*args, **kwargs)
         
         self._output_count = 1
         
@@ -68,7 +69,7 @@ class tektronixAWG2000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
         self._arbitrary_waveform_n = 0
         self._arbitrary_sequence_n = 0
         
-        self._identity_description = "Tektronix AWG2000 series arbitrary waveform generator driver"
+        self._identity_description = "Tektronix AFG3000 series arbitrary waveform generator driver"
         self._identity_identifier = ""
         self._identity_revision = ""
         self._identity_vendor = ""
@@ -77,14 +78,14 @@ class tektronixAWG2000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
         self._identity_instrument_firmware_revision = ""
         self._identity_specification_major_version = 5
         self._identity_specification_minor_version = 0
-        self._identity_supported_instrument_models = ['AWG2005','AWG2020','AWG2021','AWG2040','AWG2041']
+        self._identity_supported_instrument_models = ['AFG3021C',]
         
         self._init_outputs()
     
     def _initialize(self, resource = None, id_query = False, reset = False, **keywargs):
         "Opens an I/O session to the instrument."
         
-        super(tektronixAWG2000, self)._initialize(resource, id_query, reset, **keywargs)
+        super(tektronixAFG3000, self)._initialize(resource, id_query, reset, **keywargs)
         
         # interface clear
         if not self._driver_operation_simulate:
@@ -181,7 +182,7 @@ class tektronixAWG2000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
     
     def _init_outputs(self):
         try:
-            super(tektronixAWG2000, self)._init_outputs()
+            super(tektronixAFG3000, self)._init_outputs()
         except AttributeError:
             pass
         
