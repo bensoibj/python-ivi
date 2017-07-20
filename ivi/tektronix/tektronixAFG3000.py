@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 import time
 import struct
-from numpy import *
+import numpy as np
 
 from .. import ivi
 from .. import fgen
@@ -466,26 +466,26 @@ class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
         x = None
         if type(data) == list and type(data[0]) == float:
             # list
-            y = array(data)
-        elif type(data) == ndarray and len(data.shape) == 1:
+            y = np.array(data)
+        elif type(data) == np.ndarray and len(data.shape) == 1:
             # 1D array
             y = data
-        elif type(data) == ndarray and len(data.shape) == 2 and data.shape[0] == 1:
+        elif type(data) == np.ndarray and len(data.shape) == 2 and data.shape[0] == 1:
             # 2D array, hieght 1
             y = data[0]
-        elif type(data) == ndarray and len(data.shape) == 2 and data.shape[1] == 1:
+        elif type(data) == np.ndarray and len(data.shape) == 2 and data.shape[1] == 1:
             # 2D array, width 1
             y = data[:,0]
         else:
             x, y = ivi.get_sig(data)
         
         if x is None:
-            x = arange(0,len(y)) / 10e6
+            x = np.arange(0,len(y)) / 10e6
         
         if len(y) % self._arbitrary_waveform_quantum != 0:
             raise ivi.ValueNotSupportedException()
         
-        xincr = ivi.rms(diff(x))
+        xincr = ivi.rms(np.diff(x))
         
         # get unused handle
         self._load_catalog()
