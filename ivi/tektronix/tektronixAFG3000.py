@@ -216,7 +216,7 @@ class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
     def _get_output_enabled(self, index):
         index = ivi.get_index(self._output_name, index)
         if not self._driver_operation_simulate and not self._get_cache_valid(index=index):
-            resp = self._ask(":output:ch%d:state?" % (index+1)).split(' ', 1)[1]
+            resp = self._ask(":output%d:state?" % (index+1)).split(' ', 1)[0]
             self._output_enabled[index] = bool(int(resp))
             self._set_cache_valid(index=index)
         return self._output_enabled[index]
@@ -225,7 +225,7 @@ class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
         index = ivi.get_index(self._output_name, index)
         value = bool(value)
         if not self._driver_operation_simulate:
-            self._write(":output:ch%d:state %d" % (index+1, value))
+            self._write(":output%d:state %d" % (index+1, value))
         self._output_enabled[index] = value
         self._set_cache_valid(index=index)
     
