@@ -202,17 +202,34 @@ class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
             l = [s.strip('"') for s in l]
             self._catalog = [l[i:i+3] for i in range(0, len(l), 3)]
             self._catalog_names = [l[0] for l in self._catalog]
-    
+
     def _get_output_operation_mode(self, index):
         index = ivi.get_index(self._output_name, index)
+        if (not self._driver_operation_simulate and not
+                self._get_cache_valid(index=index)):
+            # there are further operation modes: am, fm, fsk, pm
+            state_operation_modes = dict(
+                    zip(('burst', 'am', 'fm', 'fsk', 'pm'), (False,)*5))
+            for mode in state_operation_modes.keys():
+                state_operation_modes[mode] = bool(int(
+                        self._ask(":source%d:%s:state?" % (index+1, mode)).
+                        split(' ', 1)[0]))
+            resp = [k for (k, v) in state_operation_modes.items() if v]
+            resp.append('continuous')
+            self._output_operation_mode[index] = resp[0]
+            self._set_cache_valid(index=index)
         return self._output_operation_mode[index]
-    
+
     def _set_output_operation_mode(self, index, value):
         index = ivi.get_index(self._output_name, index)
-        if value not in OperationMode:
+        if value not in fgen.OperationMode:
             raise ivi.ValueNotSupportedException()
+        if not self._driver_operation_simulate:
+            # can onyl set burst or continuous mode
+            self._write(":source%d:burst:state %d" % (index+1, value=='burst'))
         self._output_operation_mode[index] = value
-    
+        self._set_cache_valid(index=index)
+
     def _get_output_enabled(self, index):
         index = ivi.get_index(self._output_name, index)
         if not self._driver_operation_simulate and not self._get_cache_valid(index=index):
