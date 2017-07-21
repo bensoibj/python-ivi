@@ -35,10 +35,16 @@ from .. import fgen
 StandardWaveformMapping = {
         'sine': 'sin',
         'square': 'squ',
-        'triangle': 'tri',
-        'ramp_up': 'ramp',
-        #'ramp_down',
-        #'dc'
+        'pulse': 'puls',
+        'ramp': 'ramp',
+        'prnoise': 'prn',
+        'dc': 'dc',
+        'sinc': 'sinc',
+        'gaussian': 'gaus',
+        'lorentz': 'lor',
+        'erise': 'eris',
+        'edecay': 'edec',
+        'haversice': 'hav',
         }
 
 class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
@@ -375,26 +381,32 @@ class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
         for k in range(self._output_count):
             self._set_cache_valid(valid=False,index=k)
         self._set_cache_valid(index=index)
-    
+
     def _get_output_standard_waveform_waveform(self, index):
         index = ivi.get_index(self._output_name, index)
-        if not self._driver_operation_simulate and not self._get_cache_valid(index=index):
-            resp = self._ask(":fg:ch%d:shape?" % (index+1)).split(' ', 1)[1]
+        if (not self._driver_operation_simulate and not
+                self._get_cache_valid(index=index)):
+            resp = self._ask(
+                    ":source%d:function:shape?" % (index+1)).split(' ', 1)[0]
             value = resp.lower()
-            value = [k for k,v in StandardWaveformMapping.items() if v==value][0]
+            value = [k for k, v in
+                     StandardWaveformMapping.items() if v == value][0]
             self._output_standard_waveform_waveform[index] = value
             self._set_cache_valid(index=index)
         return self._output_standard_waveform_waveform[index]
-    
+
     def _set_output_standard_waveform_waveform(self, index, value):
         index = ivi.get_index(self._output_name, index)
         if value not in StandardWaveformMapping:
-            raise ivi.ValueNotSupportedException()
+            raise ivi.ValueNotSupportedException(
+                    'allowed values: %s' %
+                    str(tuple(StandardWaveformMapping.keys())))
         if not self._driver_operation_simulate:
-            self._write(":fg:ch%d:shape %s" % (index+1, StandardWaveformMapping[value]))
+            self._write(":source%d:function:shape %s" %
+                        (index+1, StandardWaveformMapping[value]))
         self._output_standard_waveform_waveform[index] = value
         self._set_cache_valid(index=index)
-    
+
     def _get_output_arbitrary_gain(self, index):
         index = ivi.get_index(self._output_name, index)
         if not self._driver_operation_simulate and not self._get_cache_valid(index=index):
