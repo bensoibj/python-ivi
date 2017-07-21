@@ -568,16 +568,24 @@ class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
     def _send_software_trigger(self):
         if not self._driver_operation_simulate:
             self._write("*TRG")
-    
+
     def _get_output_burst_count(self, index):
         index = ivi.get_index(self._output_name, index)
+        if (not self._driver_operation_simulate
+                and not self._get_cache_valid(index=index)):
+            resp = self._ask(":source%d:burst:ncycles?" % (index+1)).split(' ', 1)[0]
+            self._output_burst_count[index] = int(float(resp))
+            self._set_cache_valid(index=index)
         return self._output_burst_count[index]
-    
+
     def _set_output_burst_count(self, index, value):
         index = ivi.get_index(self._output_name, index)
-        value = int(value)
+        value = str(value)
+        if not self._driver_operation_simulate:
+            self._write(":source%d:burst:ncycles %s" % (index+1, value))
         self._output_burst_count[index] = value
-    
+        self._set_cache_valid(index=index)
+
     def _arbitrary_waveform_create_channel_waveform(self, index, data):
         handle = self._arbitrary_waveform_create(data)
         self._set_output_arbitrary_waveform(index, handle)
