@@ -213,16 +213,10 @@ class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
         index = ivi.get_index(self._output_name, index)
         if (not self._driver_operation_simulate and not
                 self._get_cache_valid(index=index)):
-            # there are further operation modes: am, fm, fsk, pm
-            state_operation_modes = dict(
-                    zip(('burst', 'am', 'fm', 'fsk', 'pm'), (False,)*5))
-            for mode in state_operation_modes.keys():
-                state_operation_modes[mode] = bool(int(
-                        self._ask(":source%d:%s:state?" % (index+1, mode)).
-                        split(' ', 1)[0]))
-            resp = [k for (k, v) in state_operation_modes.items() if v]
-            resp.append('continuous')
-            self._output_operation_mode[index] = resp[0]
+            is_burst = int(self._ask(":source%d:burst:state?" % (index+1)).
+                           split(' ', 1)[0])
+            operation_mode = ['continuous', 'burst']
+            self._output_operation_mode[index] = operation_mode[is_burst]
             self._set_cache_valid(index=index)
         return self._output_operation_mode[index]
 
