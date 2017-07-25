@@ -46,12 +46,18 @@ StandardWaveformMapping = {
         'edecay': 'edec',
         'haversice': 'hav',
         }
+TriggerSourceMapping = {
+        'timer': 'tim',
+        'external': 'ext',
+        }
 
-class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
-                fgen.ArbSeq, fgen.SoftwareTrigger, fgen.Burst,
-                fgen.ArbChannelWfm):
+
+class tektronixAFG3000(
+        ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
+        fgen.ArbSeq, fgen.SoftwareTrigger, fgen.Trigger, fgen.Burst,
+        fgen.ArbChannelWfm):
     "Tektronix AFG3000 series arbitrary/function generator driver"
-    
+
     def __init__(self, *args, **kwargs):
         self.__dict__.setdefault('_instrument_id', '')
         
@@ -571,7 +577,32 @@ class tektronixAFG3000(ivi.Driver, fgen.Base, fgen.StdFunc, fgen.ArbWfm,
     
     def _arbitrary_sequence_create(self, handle_list, loop_count_list):
         return "handle"
-    
+
+    def _get_output_trigger_source(self, index):
+        index = ivi.get_index(self._output_name, index)
+        # ignore the index parameter as the trigger seem not to be dependent
+        # on the output channel
+        if (not self._driver_operation_simulate
+                and not self._get_cache_valid(index=index)):
+            resp = self._ask(":trigger:sequence:source?")
+            value = resp.lower()
+            value = [k for k, v in
+                     TriggerSourceMapping.items() if v == value][0]
+            self._output_trigger_source[index] = value
+        return self._output_trigger_source[index]
+
+    def _set_output_trigger_source(self, index, value):
+        index = ivi.get_index(self._output_name, index)
+        # ignore the index parameter as the trigger seem not to be dependent
+        # on the output channel
+        value = str(value).lower()
+        if value not in TriggerSourceMapping.keys():
+            raise ivi.ValueNotSupportedException()
+        if not self._driver_operation_simulate:
+            self._write(":trigger:sequence:source %s" % value)
+        self._output_trigger_source[index] = value
+        self._set_cache_valid(index=index)
+
     def _send_software_trigger(self):
         if not self._driver_operation_simulate:
             self._write("*TRG")
