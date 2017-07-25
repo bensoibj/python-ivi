@@ -73,6 +73,7 @@ from .tektronixAWG2020 import tektronixAWG2020
 from .tektronixAWG2021 import tektronixAWG2021
 from .tektronixAWG2040 import tektronixAWG2040
 from .tektronixAWG2041 import tektronixAWG2041
+from .tektronixAFG3021C import tektronixAFG3021C
 
 # Power Supplies
 from .tektronixPS2520G import tektronixPS2520G
