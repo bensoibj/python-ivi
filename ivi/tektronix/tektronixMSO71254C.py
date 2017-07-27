@@ -40,3 +40,6 @@ class tektronixMSO71254C(tektronixMSO4000):
         self._bandwidth = 12.5e9
 
         self._init_channels()
+
+        # add auxiliary channel
+        self._channel_name.append('auxiliary')
